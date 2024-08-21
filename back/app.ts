@@ -3,6 +3,11 @@ import http from "http";
 import dotenv from "dotenv";
 import { Server } from "socket.io";
 
+enum MessageType {
+  TEXT,
+  IMAGE,
+}
+
 dotenv.config();
 const app = express();
 const server = http.createServer(app);
@@ -24,7 +29,15 @@ io.on("connection", (socket: any) => {
   console.log(`${socket.user.name} connected`);
 
   socket.on("chat::sendMessage", (message: string) => {
-    socket.broadcast.emit("chat::receiveMessage", message);
+    if (message.length < 1 || message.length > 200) {
+      return;
+    }
+
+    socket.emit(
+      "chat::receiveMessage",
+      message,
+      message.startsWith("/image") ? MessageType.IMAGE : MessageType.TEXT
+    );
 
     console.log(`[${socket.user.name}]: ${message}`);
   });

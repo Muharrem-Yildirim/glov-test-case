@@ -4,11 +4,18 @@ import { socket } from "@/app/lib/socket";
 import ChatMessage from "./ui/chat-message";
 import { Input } from "./ui/input";
 import { useEffect, useRef, useState } from "react";
+import ChatInput from "./ui/chat-input";
 
-type MessageHistoryElement = {
+export type MessageHistoryElement = {
   message: string;
   isLocal: boolean;
+  type: MessageType;
 };
+
+export enum MessageType {
+  TEXT,
+  IMAGE,
+}
 
 export default function Chat() {
   const [messageHistory, setMessageHistory] = useState<MessageHistoryElement[]>(
@@ -20,13 +27,14 @@ export default function Chat() {
   const sendMessage = () => {
     socket.emit("chat::sendMessage", message);
 
-    setMessageHistory([
-      ...messageHistory,
-      {
-        message: message,
-        isLocal: true,
-      },
-    ]);
+    // setMessageHistory([
+    //   ...messageHistory,
+    //   {
+    //     message: message,
+    //     isLocal: true,
+    //     type: MessageType.TEXT,
+    //   },
+    // ]);
   };
 
   const scrollToBottom = () => {
@@ -34,10 +42,10 @@ export default function Chat() {
   };
 
   useEffect(() => {
-    socket.on("chat::receiveMessage", (message) => {
+    socket.on("chat::receiveMessage", (message, messageType) => {
       setMessageHistory([
         ...messageHistory,
-        { message: message, isLocal: false },
+        { message: message, isLocal: false, type: messageType },
       ]);
 
       console.log("chat::receiveMessage", message);
@@ -54,25 +62,14 @@ export default function Chat() {
     <>
       <div className="w-full h-full max-h-full overflow-y-scroll">
         <div className="flex flex-col gap-2">
-          {messageHistory.map(
-            ({ message, isLocal }: MessageHistoryElement, idx) => (
-              <ChatMessage key={idx} message={message} isLocal={isLocal} />
-            )
-          )}
+          {messageHistory.map((message: MessageHistoryElement, idx) => (
+            <ChatMessage key={idx} messageHistoryData={message} />
+          ))}
           <div ref={messagesEndRef} />
         </div>
       </div>
 
-      <Input
-        onChange={(e) => setMessage(e.currentTarget.value)}
-        onKeyDown={(e) => {
-          if (e.key === "Enter") {
-            e.preventDefault();
-
-            sendMessage();
-          }
-        }}
-      />
+      <ChatInput sendMessage={sendMessage} setMessage={setMessage} />
     </>
   );
 }
