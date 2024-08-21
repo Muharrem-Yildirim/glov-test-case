@@ -1,9 +1,13 @@
-const app = require("express")();
-const server = require("http").createServer(app);
+import express from "express";
+import http from "http";
+import dotenv from "dotenv";
+
+dotenv.config();
+const app = express();
+const server = http.createServer(app);
 const io = require("socket.io")(server);
 
 io.on("connection", (socket: any) => {
-  /* … */
   socket.user = {
     id: socket.id,
     name: "Test " + Math.floor(Math.random() * 1000),
@@ -20,4 +24,6 @@ io.on("connection", (socket: any) => {
   });
 });
 
-server.listen(3001);
+server.listen(process.env.PORT, () => {
+  console.log(`Server listening on port *:${process.env.PORT}`);
+});
