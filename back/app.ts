@@ -24,7 +24,7 @@ io.on("connection", (socket: any) => {
   console.log(`${socket.user.name} connected`);
 
   socket.on("chat::sendMessage", (message: string) => {
-    io.emit("chat::receiveMessage", message);
+    socket.broadcast.emit("chat::receiveMessage", message);
 
     console.log(`[${socket.user.name}]: ${message}`);
   });
