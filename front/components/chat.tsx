@@ -51,16 +51,32 @@ export default function Chat() {
       console.log("chat::receiveMessage", message);
     });
 
-    scrollToBottom();
-
     return () => {
       socket.off("chat::receiveMessage");
     };
   }, [messageHistory]);
 
+  useEffect(() => {
+    if (messageHistory.length === 0) {
+      return;
+    }
+    if (messageHistory[messageHistory.length - 1].type === MessageType.TEXT) {
+      scrollToBottom();
+      return;
+    }
+
+    const timeout = setTimeout(() => {
+      scrollToBottom();
+    }, 500);
+
+    return () => {
+      clearTimeout(timeout);
+    };
+  }, [messageHistory]);
+
   return (
     <>
-      <div className="w-full h-full max-h-full overflow-y-scroll">
+      <div className="w-full h-full min-h-full max-h-full overflow-y-scroll">
         <div className="flex flex-col gap-2">
           {messageHistory.map((message: MessageHistoryElement, idx) => (
             <ChatMessage key={idx} messageHistoryData={message} />
@@ -69,7 +85,11 @@ export default function Chat() {
         </div>
       </div>
 
-      <ChatInput sendMessage={sendMessage} setMessage={setMessage} />
+      <ChatInput
+        sendMessage={sendMessage}
+        setMessage={setMessage}
+        message={message}
+      />
     </>
   );
 }
