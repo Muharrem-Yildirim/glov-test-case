@@ -48,7 +48,7 @@ export default function Chat() {
         { message: message, isLocal: false, type: messageType },
       ]);
 
-      console.log("chat::receiveMessage", message);
+      console.log("chat::receiveMessage", message, messageType);
     });
 
     return () => {
