@@ -1,6 +1,6 @@
 "use client";
 
-import { socket } from "@/app/lib/socket";
+import { socket } from "@/lib/socket";
 import ChatMessage from "./ui/chat-message";
 import { Input } from "./ui/input";
 import { useEffect, useRef, useState } from "react";
@@ -22,7 +22,15 @@ export enum MessageType {
 
 export default function Chat() {
   const [messageHistory, setMessageHistory] = useState<MessageHistoryElement[]>(
-    []
+    [
+      {
+        message:
+          "Welcome to the chat. Type /image, /select or try autocomplete.",
+        type: MessageType.TEXT,
+        isSystemMessage: true,
+        isLocal: false,
+      },
+    ]
   );
   const [message, setMessage] = useState("");
   const messagesEndRef = useRef<HTMLInputElement>(null);
