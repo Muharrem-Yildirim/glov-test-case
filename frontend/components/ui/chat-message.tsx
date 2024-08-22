@@ -34,7 +34,7 @@ function TextBubble({
     >
       {messageHistory.sender && !messageHistory.isLocal && (
         <>
-          <span className="inline-block text-xs italic">
+          <span className="inline-block text-xs italic break-words">
             {messageHistory.sender.name}
           </span>
           <br />
