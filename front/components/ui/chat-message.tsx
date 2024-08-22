@@ -1,6 +1,7 @@
 import clsx from "clsx";
 import { MessageHistoryElement, MessageType } from "../chat";
 import Image from "next/image";
+import { useState } from "react";
 
 export default function ChatMessage({
   messageHistoryData,
@@ -51,6 +52,9 @@ function ImageBubble({
   messageHistory: MessageHistoryElement;
 }) {
   const number = messageHistory.message.split(" ")[1];
+  const [src, setSrc] = useState<string>(
+    "https://picsum.photos/id/" + number + "/200"
+  );
 
   return (
     <div
@@ -60,10 +64,15 @@ function ImageBubble({
         messageHistory.isLocal && " float-right"
       )}
     >
-      <img
+      <Image
+        height={200}
+        width={200}
         alt="random"
         className="rounded-lg"
-        src={"https://picsum.photos/id/" + number + "/200"}
+        src={src}
+        onError={() => {
+          setSrc("https://picsum.photos/200/200");
+        }}
       />
     </div>
   );
