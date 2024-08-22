@@ -1,11 +1,9 @@
-version: '3.8'
-
 services:
   frontend:
     build:
       context: ./front
     ports:
-      - "3000:3000"
+      - "3001:3001"
     depends_on:
       - backend
 
@@ -13,4 +11,4 @@ services:
     build:
       context: ./back
     ports:
-      - "3001:3001"
+      - "3002:3002"

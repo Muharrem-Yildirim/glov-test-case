@@ -8,7 +8,7 @@ This project is test case for glov. I have used TypeScript, Node.js, Next.js, Ta
 2. Copy .env.example to .env in back and front folders
 3. Fill up .env files
 4. Run docker-compose up
-5. Visit http://localhost:3000
+5. Visit http://localhost:3001
 
 # How to run tests?
 
