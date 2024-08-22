@@ -7,6 +7,9 @@ import autocompleteWords from "@/consts/autocomplete-words";
 import AutocompletePlaceholder, {
   AutocompletePlaceholderRef,
 } from "../commands/autocomplete-placeholder";
+import { socket } from "@/lib/socket";
+import useSocketConnection from "@/hook/socket-connection-hook";
+import clsx from "clsx";
 
 const commandList = [
   {
@@ -35,14 +38,18 @@ export default function ChatInput({
   const currentCommand = commandList.find((command) => {
     return command.cmd == message.split(" ")[0];
   });
+  const [isConnected] = useSocketConnection();
 
   const commandParameters = message.split(" ").slice(1);
 
   const sendMessageInternal = () => {
+    if (!isConnected) return;
+
     let canSendCommand =
       currentCommand &&
       ((currentCommand.mustSelectOption == true &&
-        commandParameters.length > 0) ||
+        commandParameters.length > 0 &&
+        commandParameters[0] !== "") ||
         currentCommand.mustSelectOption == false);
 
     if (message.startsWith("/") && !canSendCommand) {
@@ -92,7 +99,8 @@ export default function ChatInput({
             ref={ref}
             onChange={(e) => setMessage(e.currentTarget.value)}
             value={message}
-            placeholder="Type a message..."
+            disabled={!isConnected}
+            placeholder={isConnected ? "Type a message..." : "Connecting..."}
             onKeyDown={(e) => {
               if (e.key === "Enter") {
                 e.preventDefault();
@@ -114,7 +122,10 @@ export default function ChatInput({
           />
           <ArrowUp
             onClick={sendMessageInternal}
-            className="absolute right-2 top-1/2 h-4 w-4 -translate-y-1/2 transform hover:opacity-80 cursor-pointer"
+            className={clsx(
+              "absolute right-2 top-1/2 h-4 w-4 -translate-y-1/2 transform hover:opacity-80 cursor-pointer",
+              !isConnected && "!cursor-not-allowed"
+            )}
           />
         </div>
       </div>
