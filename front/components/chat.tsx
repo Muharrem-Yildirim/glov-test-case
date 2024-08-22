@@ -12,6 +12,7 @@ export type MessageHistoryElement = {
   isLocal: boolean;
   type: MessageType;
   isSystemMessage?: boolean;
+  sender?: { id: string; name: string };
 };
 
 export enum MessageType {
@@ -29,15 +30,6 @@ export default function Chat() {
   const sendMessage = () => {
     socket.emit("chat::sendMessage", message);
 
-    // setMessageHistory([
-    //   ...messageHistory,
-    //   {
-    //     message: message,
-    //     isLocal: true,
-    //     type: MessageType.TEXT,
-    //   },
-    // ]);
-
     clearInput();
   };
 
@@ -53,7 +45,7 @@ export default function Chat() {
     socket.on("chat::receiveMessage", ({ message, type, sender }) => {
       setMessageHistory([
         ...messageHistory,
-        { message: message, isLocal: sender.id === socket.id, type },
+        { message: message, isLocal: sender.id === socket.id, type, sender },
       ]);
 
       console.log("chat::receiveMessage", message, type);
@@ -111,7 +103,10 @@ export default function Chat() {
   return (
     <ChatContextProvider clearInput={clearInput}>
       <>
-        <div className="flex-grow w-full h-full min-h-full max-h-full overflow-y-scroll p-4">
+        <div className="flex justify-center min-h-20 text-white bg-[#2d2d2d] items-center mb-2 shadow-sm shadow-white/40">
+          Welcome to chat.
+        </div>
+        <div className="flex-grow h-full w-full min-h-full max-h-full overflow-y-auto p-4 bg-[#212121]">
           <div className="flex flex-col gap-2">
             {messageHistory.map((message: MessageHistoryElement, idx) => (
               <ChatMessage key={idx} messageHistoryData={message} />
