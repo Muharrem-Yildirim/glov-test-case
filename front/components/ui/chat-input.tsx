@@ -25,7 +25,7 @@ export default function ChatInput({
   sendMessage: () => void;
   message: string;
 }) {
-  const ref = useRef<HTMLInputElement>();
+  const ref = useRef<HTMLInputElement>(null);
   const currentCommand = commandList.find((command) => {
     return command.cmd == message.split(" ")[0];
   });

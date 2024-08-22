@@ -11,12 +11,9 @@ import {
 import { socket } from "@/app/lib/socket";
 import useChatContext from "@/hook/chat-hook";
 import selectOptions from "@/consts/select-options";
+import { CommandPlaceholder } from "@/types/command-placeholder";
 
-export default function SelectCommand({
-  inputRef,
-}: {
-  inputRef: React.RefObject<HTMLInputElement>;
-}) {
+export default function SelectCommand({ inputRef }: CommandPlaceholder) {
   const [open, setOpen] = React.useState(true);
   const [value, setValue] = React.useState("");
   const chatContext = useChatContext();
