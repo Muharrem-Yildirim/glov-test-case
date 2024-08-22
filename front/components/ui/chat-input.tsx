@@ -1,8 +1,10 @@
-import { cloneElement, createElement, createRef, useRef } from "react";
+import { createElement, useRef } from "react";
 import ImagePlaceholder from "../commands/image-placeholder";
 import { Input } from "./input";
 import SelectPlaceholder from "../commands/select-placeholder";
-import { ArrowUp, LucideAArrowDown } from "lucide-react";
+import { ArrowUp } from "lucide-react";
+import autocompleteWords from "@/consts/autocomplete-words";
+import AutocompletePlaceholder from "../commands/autocomplete-placeholder";
 
 const commandList = [
   {
@@ -17,6 +19,12 @@ const commandList = [
   },
 ];
 
+interface AutocompletePlaceholderRef {
+  forceComplete(): void;
+  selectNext(): void;
+  selectPrev(): void;
+}
+
 export default function ChatInput({
   setMessage: setMessage,
   message: message,
@@ -27,6 +35,7 @@ export default function ChatInput({
   message: string;
 }) {
   const ref = useRef<HTMLInputElement>(null);
+  const refAutocomplete = useRef<AutocompletePlaceholderRef>();
   const currentCommand = commandList.find((command) => {
     return command.cmd == message.split(" ")[0];
   });
@@ -34,11 +43,13 @@ export default function ChatInput({
   const commandParameters = message.split(" ").slice(1);
 
   const sendMessageInternal = () => {
-    if (
+    let canSendCommand =
       currentCommand &&
-      currentCommand?.mustSelectOption &&
-      commandParameters.length == 0
-    ) {
+      ((currentCommand.mustSelectOption == true &&
+        commandParameters.length > 0) ||
+        currentCommand.mustSelectOption == false);
+
+    if (message.startsWith("/") && !canSendCommand) {
       return;
     }
 
@@ -47,23 +58,44 @@ export default function ChatInput({
     ref.current?.focus();
   };
 
+  const lastWord = message.split(" ").slice(-1)[0];
+  const filteredAutocompleteWords = autocompleteWords.filter((w) =>
+    w.startsWith(lastWord)
+  );
+
+  const hasAutoComplete =
+    autocompleteWords.filter((w) => w.startsWith(lastWord)).length > 0 &&
+    lastWord.length > 0 &&
+    filteredAutocompleteWords.find((w) => w === lastWord) === undefined;
+
   return (
     <>
-      {currentCommand && (
+      {(currentCommand || hasAutoComplete) && (
         <div className="relative">
-          <div className="text-white absolute right-10 bottom-0">
+          {/* <div className="text-white absolute right-10 bottom-0">
             currentCommand: {currentCommand?.cmd}
-          </div>
-          {createElement(currentCommand?.component, {
-            message: message,
-            commandParameters,
-            inputRef: ref,
-          })}
+          </div> */}
+          {currentCommand
+            ? createElement(currentCommand?.component!, {
+                message: message,
+                commandParameters,
+                inputRef: ref,
+                setMessage: setMessage,
+              })
+            : createElement(AutocompletePlaceholder, {
+                message: message,
+                commandParameters,
+                inputRef: ref,
+                matches: filteredAutocompleteWords,
+                setMessage: setMessage,
+                lastWord: lastWord,
+                ref: refAutocomplete,
+                // forceComplete: refForceComplete,
+              })}
         </div>
       )}
-
       <div className="relative flex justify-center">
-        <div className="relative flex items-center flex-grow-[0.25]">
+        <div className="relative flex items-center lg:flex-grow-[0.25] mx-2 flex-grow">
           <Input
             ref={ref}
             onChange={(e) => setMessage(e.currentTarget.value)}
@@ -73,7 +105,18 @@ export default function ChatInput({
               if (e.key === "Enter") {
                 e.preventDefault();
 
+                if (hasAutoComplete && refAutocomplete.current) {
+                  refAutocomplete.current!.forceComplete();
+                  return;
+                }
+
                 sendMessageInternal();
+              } else if (hasAutoComplete && e.key == "ArrowUp") {
+                e.preventDefault();
+                refAutocomplete.current!.selectPrev();
+              } else if (hasAutoComplete && e.key == "ArrowDown") {
+                e.preventDefault();
+                refAutocomplete.current!.selectNext();
               }
             }}
           />

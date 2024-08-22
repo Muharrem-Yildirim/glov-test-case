@@ -1,0 +1,26 @@
+const autocompleteWords = [
+  "hello",
+  "world",
+  "awesome",
+  "chat",
+  "keyboard",
+  "friendly",
+  "program",
+  "coding",
+  "interface",
+  "response",
+  "autocomplete",
+  "message",
+  "connect",
+  "function",
+  "user",
+  "typing",
+  "quick",
+  "innovation",
+  "instant",
+  "feature",
+  "/image",
+  "/select",
+];
+
+export default autocompleteWords;
