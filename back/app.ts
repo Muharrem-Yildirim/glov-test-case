@@ -19,33 +19,33 @@ const io = new Server(server, {
 });
 
 io.on("connection", (socket: any) => {
-  socket.user = {
+  socket.data.user = {
     id: socket.id,
     name: "Test " + Math.floor(Math.random() * 1000),
   };
 
-  io.emit("auth::connect", socket.user);
+  io.emit("auth::connect", socket.data.user);
 
-  console.log(`${socket.user.name} connected`);
+  console.log(`${socket.data.user.name} connected`);
 
   socket.on("chat::sendMessage", (message: string) => {
     if (message.length < 1 || message.length > 200) {
       return;
     }
 
-    socket.emit(
-      "chat::receiveMessage",
+    io.emit("chat::receiveMessage", {
       message,
-      message.startsWith("/image") ? MessageType.IMAGE : MessageType.TEXT
-    );
+      type: message.startsWith("/image") ? MessageType.IMAGE : MessageType.TEXT,
+      sender: socket.data.user,
+    });
 
-    console.log(`[${socket.user.name}]: ${message}`);
+    console.log(`[${socket.data.user.name}]: ${message}`);
   });
 
   socket.on("disconnect", () => {
-    io.emit("auth::disconnect", socket.user);
+    io.emit("auth::disconnect", socket.data.user);
 
-    console.log(`${socket.user.name} disconnected`);
+    console.log(`${socket.data.user.name} disconnected`);
   });
 });
 
