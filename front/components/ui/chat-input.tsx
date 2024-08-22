@@ -1,11 +1,18 @@
-import { cloneElement, createElement } from "react";
-import ImagePlaceholder from "../commands/image";
+import { cloneElement, createElement, createRef, useRef } from "react";
+import ImagePlaceholder from "../commands/image-placeholder";
 import { Input } from "./input";
+import SelectCommand from "../commands/select-command";
 
 const commandList = [
   {
     cmd: "/image",
     component: ImagePlaceholder,
+    mustSelectOption: true,
+  },
+  {
+    cmd: "/select",
+    component: SelectCommand,
+    mustSelectOption: true,
   },
 ];
 
@@ -18,6 +25,7 @@ export default function ChatInput({
   sendMessage: () => void;
   message: string;
 }) {
+  const ref = useRef<HTMLInputElement>();
   const currentCommand = commandList.find((command) => {
     return command.cmd == message.split(" ")[0];
   });
@@ -34,15 +42,27 @@ export default function ChatInput({
           {createElement(currentCommand?.component, {
             message: message,
             commandParameters,
+            inputRef: ref,
           })}
         </div>
       )}
 
       <Input
+        ref={ref}
         onChange={(e) => setMessage(e.currentTarget.value)}
+        value={message}
+        placeholder="Type a message..."
         onKeyDown={(e) => {
           if (e.key === "Enter") {
             e.preventDefault();
+
+            if (
+              currentCommand &&
+              currentCommand?.mustSelectOption &&
+              commandParameters.length == 0
+            ) {
+              return;
+            }
 
             sendMessage();
           }
