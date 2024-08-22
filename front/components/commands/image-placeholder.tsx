@@ -10,7 +10,7 @@ export default function ImagePlaceholder({
 
   return (
     <div
-      className="absolute bottom-2 left-2 bg-black/60 rounded-xl p-2"
+      className="absolute bottom-2 left-2 bg-white rounded-xl p-1"
       style={{
         left: getCaretCoordinates(
           inputRef.current,
@@ -22,6 +22,7 @@ export default function ImagePlaceholder({
         height={"100px"}
         width={"100px"}
         alt="random"
+        className="rounded-lg"
         src={"https://picsum.photos/id/" + commandParameters[0] + "/200"}
       />
     </div>
