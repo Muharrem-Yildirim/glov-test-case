@@ -2,6 +2,7 @@ import { cloneElement, createElement, createRef, useRef } from "react";
 import ImagePlaceholder from "../commands/image-placeholder";
 import { Input } from "./input";
 import SelectPlaceholder from "../commands/select-placeholder";
+import { ArrowUp, LucideAArrowDown } from "lucide-react";
 
 const commandList = [
   {
@@ -32,6 +33,20 @@ export default function ChatInput({
 
   const commandParameters = message.split(" ").slice(1);
 
+  const sendMessageInternal = () => {
+    if (
+      currentCommand &&
+      currentCommand?.mustSelectOption &&
+      commandParameters.length == 0
+    ) {
+      return;
+    }
+
+    sendMessage();
+
+    ref.current?.focus();
+  };
+
   return (
     <>
       {currentCommand && (
@@ -47,27 +62,27 @@ export default function ChatInput({
         </div>
       )}
 
-      <Input
-        ref={ref}
-        onChange={(e) => setMessage(e.currentTarget.value)}
-        value={message}
-        placeholder="Type a message..."
-        onKeyDown={(e) => {
-          if (e.key === "Enter") {
-            e.preventDefault();
+      <div className="relative flex justify-center">
+        <div className="relative flex items-center flex-grow-[0.25]">
+          <Input
+            ref={ref}
+            onChange={(e) => setMessage(e.currentTarget.value)}
+            value={message}
+            placeholder="Type a message..."
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                e.preventDefault();
 
-            if (
-              currentCommand &&
-              currentCommand?.mustSelectOption &&
-              commandParameters.length == 0
-            ) {
-              return;
-            }
-
-            sendMessage();
-          }
-        }}
-      />
+                sendMessageInternal();
+              }
+            }}
+          />
+          <ArrowUp
+            onClick={sendMessageInternal}
+            className="absolute right-2 top-1/2 h-4 w-4 -translate-y-1/2 transform hover:opacity-80 cursor-pointer"
+          />
+        </div>
+      </div>
     </>
   );
 }
