@@ -42,6 +42,7 @@ export default function Chat() {
   };
 
   const scrollToBottom = () => {
+    if (!messagesEndRef.current) return;
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
