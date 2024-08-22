@@ -1,7 +1,7 @@
 import { cloneElement, createElement, createRef, useRef } from "react";
 import ImagePlaceholder from "../commands/image-placeholder";
 import { Input } from "./input";
-import SelectCommand from "../commands/select-command";
+import SelectPlaceholder from "../commands/select-placeholder";
 
 const commandList = [
   {
@@ -11,7 +11,7 @@ const commandList = [
   },
   {
     cmd: "/select",
-    component: SelectCommand,
+    component: SelectPlaceholder,
     mustSelectOption: true,
   },
 ];
