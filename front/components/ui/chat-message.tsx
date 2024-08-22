@@ -26,13 +26,21 @@ function TextBubble({
   return (
     <div
       className={clsx(
-        " py-2 px-3 rounded-2xl font-serif text-white font-roboto inline-block",
-        messageHistory.isLocal && "float-right",
-        !messageHistory.isSystemMessage && "bg-[#2f2f2f]",
-        messageHistory.isSystemMessage && "italic"
+        "py-2 px-3 rounded-2xl text-white font-roboto inline-block",
+        messageHistory.isLocal ? "float-right bg-[#5d5d5d]" : "bg-[#2f2f2f]",
+        messageHistory.isSystemMessage && "italic bg-[#d75757]"
       )}
     >
-      {messageHistory.message}
+      {messageHistory.sender && !messageHistory.isLocal && (
+        <>
+          <span className="inline-block text-xs italic">
+            {messageHistory.sender.name}
+          </span>
+          <br />
+        </>
+      )}
+
+      <span>{messageHistory.message}</span>
     </div>
   );
 }
