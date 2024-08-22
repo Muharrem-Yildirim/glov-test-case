@@ -11,6 +11,7 @@ export type MessageHistoryElement = {
   message: string;
   isLocal: boolean;
   type: MessageType;
+  isSystemMessage?: boolean;
 };
 
 export enum MessageType {
@@ -58,8 +59,34 @@ export default function Chat() {
       console.log("chat::receiveMessage", message, type);
     });
 
+    socket.on("auth::connect", ({ name }) => {
+      setMessageHistory([
+        ...messageHistory,
+        {
+          message: `${name} joined.`,
+          isLocal: false,
+          type: MessageType.TEXT,
+          isSystemMessage: true,
+        },
+      ]);
+    });
+
+    socket.on("auth::disconnect", ({ name }) => {
+      setMessageHistory([
+        ...messageHistory,
+        {
+          message: `${name} disconected.`,
+          isLocal: false,
+          type: MessageType.TEXT,
+          isSystemMessage: true,
+        },
+      ]);
+    });
+
     return () => {
       socket.off("chat::receiveMessage");
+      socket.off("auth::connect");
+      socket.off("auth::disconnect");
     };
   }, [messageHistory]);
 
@@ -84,7 +111,7 @@ export default function Chat() {
   return (
     <ChatContextProvider clearInput={clearInput}>
       <>
-        <div className="flex-grow w-full h-full min-h-full max-h-full overflow-y-scroll">
+        <div className="flex-grow w-full h-full min-h-full max-h-full overflow-y-scroll p-4">
           <div className="flex flex-col gap-2">
             {messageHistory.map((message: MessageHistoryElement, idx) => (
               <ChatMessage key={idx} messageHistoryData={message} />
