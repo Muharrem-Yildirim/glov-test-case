@@ -103,7 +103,7 @@ export default function Chat() {
   return (
     <ChatContextProvider clearInput={clearInput}>
       <>
-        <div className="flex justify-center min-h-20 text-white bg-[#2d2d2d] items-center mb-2 shadow-sm shadow-white/40">
+        <div className="flex mb-0.5 justify-center lg:min-h-20 min-h-10 text-white bg-[#2d2d2d] items-center shadow-sm shadow-white/40">
           Welcome to chat.
         </div>
         <div className="flex-grow h-full w-full min-h-full max-h-full overflow-y-auto p-4 bg-[#212121]">

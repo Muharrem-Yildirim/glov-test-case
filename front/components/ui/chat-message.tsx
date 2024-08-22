@@ -55,12 +55,16 @@ function ImageBubble({
   return (
     <div
       className={clsx(
-        "bg-[#2f2f2f] inline-block py-2 px-3 rounded-2xl font-serif text-white font-roboto",
+        "bg-[#2f2f2f] inline-block p-2  rounded-2xl font-serif text-white font-roboto",
         messageHistory.isSystemMessage && "ml-auto mr-auto",
         messageHistory.isLocal && " float-right"
       )}
     >
-      <img alt="random" src={"https://picsum.photos/id/" + number + "/200"} />
+      <img
+        alt="random"
+        className="rounded-lg"
+        src={"https://picsum.photos/id/" + number + "/200"}
+      />
     </div>
   );
 }
