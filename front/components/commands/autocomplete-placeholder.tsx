@@ -12,6 +12,12 @@ import {
 } from "@/components/ui/command";
 import { CommandPlaceholder } from "@/types/command-placeholder";
 
+export interface AutocompletePlaceholderRef {
+  forceComplete(): void;
+  selectNext(): void;
+  selectPrev(): void;
+}
+
 export function AutocompletePlaceholder(
   {
     inputRef,
@@ -22,9 +28,8 @@ export function AutocompletePlaceholder(
   }: CommandPlaceholder & {
     matches: string[];
     lastWord: string;
-    ref: React.RefObject<any>;
   },
-  ref: React.Ref<CommandPlaceholder>
+  ref: React.Ref<AutocompletePlaceholderRef | null>
 ) {
   const [value, setValue] = React.useState("");
 

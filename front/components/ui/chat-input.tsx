@@ -4,7 +4,9 @@ import { Input } from "./input";
 import SelectPlaceholder from "../commands/select-placeholder";
 import { ArrowUp } from "lucide-react";
 import autocompleteWords from "@/consts/autocomplete-words";
-import AutocompletePlaceholder from "../commands/autocomplete-placeholder";
+import AutocompletePlaceholder, {
+  AutocompletePlaceholderRef,
+} from "../commands/autocomplete-placeholder";
 
 const commandList = [
   {
@@ -19,12 +21,6 @@ const commandList = [
   },
 ];
 
-interface AutocompletePlaceholderRef {
-  forceComplete(): void;
-  selectNext(): void;
-  selectPrev(): void;
-}
-
 export default function ChatInput({
   setMessage: setMessage,
   message: message,
@@ -35,7 +31,7 @@ export default function ChatInput({
   message: string;
 }) {
   const ref = useRef<HTMLInputElement>(null);
-  const refAutocomplete = useRef<AutocompletePlaceholderRef>();
+  const refAutocomplete = useRef<AutocompletePlaceholderRef | null>(null);
   const currentCommand = commandList.find((command) => {
     return command.cmd == message.split(" ")[0];
   });
@@ -72,9 +68,6 @@ export default function ChatInput({
     <>
       {(currentCommand || hasAutoComplete) && (
         <div className="relative">
-          {/* <div className="text-white absolute right-10 bottom-0">
-            currentCommand: {currentCommand?.cmd}
-          </div> */}
           {currentCommand
             ? createElement(currentCommand?.component!, {
                 message: message,
@@ -90,7 +83,6 @@ export default function ChatInput({
                 setMessage: setMessage,
                 lastWord: lastWord,
                 ref: refAutocomplete,
-                // forceComplete: refForceComplete,
               })}
         </div>
       )}
