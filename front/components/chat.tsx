@@ -5,6 +5,7 @@ import ChatMessage from "./ui/chat-message";
 import { Input } from "./ui/input";
 import { useEffect, useRef, useState } from "react";
 import ChatInput from "./ui/chat-input";
+import { ChatContextProvider } from "@/context/chat-context";
 
 export type MessageHistoryElement = {
   message: string;
@@ -35,20 +36,26 @@ export default function Chat() {
     //     type: MessageType.TEXT,
     //   },
     // ]);
+
+    clearInput();
   };
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
+  const clearInput = () => {
+    setMessage("");
+  };
+
   useEffect(() => {
-    socket.on("chat::receiveMessage", (message, messageType) => {
+    socket.on("chat::receiveMessage", ({ message, type, sender }) => {
       setMessageHistory([
         ...messageHistory,
-        { message: message, isLocal: false, type: messageType },
+        { message: message, isLocal: sender.id === socket.id, type },
       ]);
 
-      console.log("chat::receiveMessage", message, messageType);
+      console.log("chat::receiveMessage", message, type);
     });
 
     return () => {
@@ -75,21 +82,23 @@ export default function Chat() {
   }, [messageHistory]);
 
   return (
-    <>
-      <div className="w-full h-full min-h-full max-h-full overflow-y-scroll">
-        <div className="flex flex-col gap-2">
-          {messageHistory.map((message: MessageHistoryElement, idx) => (
-            <ChatMessage key={idx} messageHistoryData={message} />
-          ))}
-          <div ref={messagesEndRef} />
+    <ChatContextProvider clearInput={clearInput}>
+      <>
+        <div className="flex-grow w-full h-full min-h-full max-h-full overflow-y-scroll">
+          <div className="flex flex-col gap-2">
+            {messageHistory.map((message: MessageHistoryElement, idx) => (
+              <ChatMessage key={idx} messageHistoryData={message} />
+            ))}
+            <div ref={messagesEndRef} />
+          </div>
         </div>
-      </div>
 
-      <ChatInput
-        sendMessage={sendMessage}
-        setMessage={setMessage}
-        message={message}
-      />
-    </>
+        <ChatInput
+          sendMessage={sendMessage}
+          setMessage={setMessage}
+          message={message}
+        />
+      </>
+    </ChatContextProvider>
   );
 }
