@@ -8,7 +8,7 @@ import {
   CommandItem,
   CommandList,
 } from "@/components/ui/command";
-import { socket } from "@/app/lib/socket";
+import { socket } from "@/lib/socket";
 import useChatContext from "@/hook/chat-hook";
 import selectOptions from "@/consts/select-options";
 import { CommandPlaceholder } from "@/types/command-placeholder";
