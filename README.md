@@ -2,6 +2,8 @@
 
 This project is test case for glov. I have used TypeScript, Node.js, Next.js, Tailwind CSS, Docker and Socket.io in this project.
 
+To see autocomplete words go to [autocomplete-words.ts](https://github.com/Muharrem-Yildirim/glov-test-case/blob/main/frontend/consts/autocomplete-words.ts) file.
+
 # How to deploy?
 
 1. Install docker
